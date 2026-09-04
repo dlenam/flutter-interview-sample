@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 import 'package:flutter_onboarding_bloc/features/onboarding/repository/onboarding_repository.dart';
 import 'package:flutter_onboarding_bloc/features/onboarding/views/onboarding_screen.dart';
+import 'package:flutter_onboarding_bloc/features/profile/providers/profile_provider.dart';
+import 'package:flutter_onboarding_bloc/features/profile/services/fake_profile_api.dart';
+import 'package:flutter_onboarding_bloc/features/profile/views/profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  void _openProfile(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider(
+          create: (_) => ProfileProvider(FakeProfileApi())..loadProfile(),
+          child: const ProfileScreen(),
+        ),
+      ),
+    );
+  }
 
   Future<void> _resetOnboarding(BuildContext context) async {
     await context.read<OnboardingRepository>().reset();
@@ -64,6 +79,12 @@ class HomeScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 48),
+                ElevatedButton.icon(
+                  onPressed: () => _openProfile(context),
+                  icon: const Icon(Icons.person_rounded),
+                  label: const Text('Edit Profile'),
+                ),
+                const SizedBox(height: 16),
                 OutlinedButton.icon(
                   onPressed: () => _resetOnboarding(context),
                   icon: const Icon(Icons.refresh_rounded),
